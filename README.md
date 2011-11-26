@@ -10,7 +10,7 @@ Stay tuned for a Gedit3 version
 ## Installation
 
 Drop the files contained in this package into your `${HOME}/.gnome2/gedit/plugins/` folder. If the `plugins` folder does not exist yet, just create it.
-Start gedit and choose `Edit >> Plugins` and activate the _duplicate_ plugin.
+Start gedit and choose `Edit >> Settings` and in the `Plugins` section activate the _duplicate_ plugin.
 
 
 ## How it works
