@@ -1,9 +1,9 @@
-[Gedit Plugin]
-Loader=python
-Module=duplicate
-IAge=2
-Name=Duplicate
+[Plugin]
+Loader=python3
+Module=duplicateline
+IAge=3
+Name=Duplicate Line
 Description=Duplicate current line, current selection or selected lines
-Authors=Johannes Braun
-Copyright=
+Authors=Johannes Braun, Tyler King <tyler.n.king@icloud.com>
+Copyright=Johannes Braun, Tyler King
 Website=http://www.hannenz.de
