@@ -3,13 +3,13 @@ from gi.repository import GObject, Gtk, Gedit
 
 # Place the menu item above "Select All" in "Edit".
 ui_str = """<ui>
-  <menubar name="MenuBar">
-    <menu name="EditMenu" action="Edit">
-      <placeholder name="EditOps_2">
-        <menuitem name="DuplicateLine" action="DuplicateLine"/>
-      </placeholder>
-    </menu>
-  </menubar>
+<menubar name="MenuBar">
+<menu name="EditMenu" action="Edit">
+<placeholder name="EditOps_2">
+<menuitem name="DuplicateLine" action="DuplicateLine"/>
+</placeholder>
+</menu>
+</menubar>
 </ui>
 """
 
@@ -64,15 +64,18 @@ class DuplicateLineWindowActivatable(GObject.Object, Gedit.WindowActivatable):
         if doc.get_has_selection():
             # User has text selected, get bounds.
             s, e = doc.get_selection_bounds()
-            l1   = s.get_line()
-            l2   = e.get_line()
+            l1 = s.get_line()
+            l2 = e.get_line()
 
             if l1 != l2:
                 # Multi-lines selected. Grab the text, insert.
                 s.set_line_offset(0)
-                e.forward_to_line_end()
+                e.set_line_offset(e.get_chars_in_line())
 
-                text = "\n" + doc.get_text(s, e, False)
+                text = doc.get_text(s, e, False)
+                if text[-1:] != '\n':
+                    # Text doesn't have a new line at the end. Add one for the beginning of the next.
+                    text = "\n" + text
 
                 doc.insert(e, text)
             else:
@@ -92,3 +95,4 @@ class DuplicateLineWindowActivatable(GObject.Object, Gedit.WindowActivatable):
             text = "\n" + doc.get_text(s, e, False)
 
             doc.insert(e, text)
+
