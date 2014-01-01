@@ -1,16 +1,13 @@
-# duplicate - gedit plugin
+# Duplicate Lines Plugin
 
 This plugin for the gedit text editor allows to duplicate lines, just like in [Geany](http://www.geany.org), where you can press `CTRL+d` to duplicate either the current line or the current selection.
 
-This plugin is for Gedit 2.x
-
-Stay tuned for a Gedit3 version
-
+This plugin is for Gedit 3.x
 
 ## Installation
 
-Drop the files contained in this package into your `${HOME}/.gnome2/gedit/plugins/` folder. If the `plugins` folder does not exist yet, just create it.
-Start gedit and choose `Edit >> Settings` and in the `Plugins` section activate the _duplicate_ plugin.
+Drop the files contained in this package into your `${HOME}/.local/share/gedit/plugins/` folder. If the `plugins` folder does not exist yet, just create it.
+Start gedit and open `Preferences` and in the `Plugins` section activate the _Duplicate Lines_ plugin.
 
 
 ## How it works

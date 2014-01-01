@@ -1,9 +1,0 @@
-[Gedit Plugin]
-Loader=python
-Module=duplicate
-IAge=2
-Name=Duplicate
-Description=Duplicate current line, current selection or selected lines
-Authors=Johannes Braun
-Copyright=
-Website=http://www.hannenz.de
