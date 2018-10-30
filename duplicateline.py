@@ -1,17 +1,36 @@
 from gettext import gettext as _
-from gi.repository import GObject, Gtk, Gedit
+from gi.repository import GObject, Gtk, Gio, Gedit
 
-# Place the menu item above "Select All" in "Edit".
-ui_str = """<ui>
-<menubar name="MenuBar">
-<menu name="EditMenu" action="Edit">
-<placeholder name="EditOps_2">
-<menuitem name="DuplicateLine" action="DuplicateLine"/>
-</placeholder>
-</menu>
-</menubar>
-</ui>
-"""
+ACTIONS = {
+    'duplicateLine': {
+        'label': _("Duplicate Line/Selection"),
+        'key': ['<Primary><Shift>d'],
+        'method': 'on_duplicate_line'
+    },
+}
+
+
+class DuplicateLineApp(GObject.Object, Gedit.AppActivatable):
+    __gtype_name__ = "DuplicateLineApp"
+    app = GObject.property(type=Gedit.App)
+
+    def __init__(self):
+        GObject.Object.__init__(self)
+
+    def do_activate(self):
+        self.menu_ext = self.extend_menu("edit-section-1")
+
+        for action, config in ACTIONS.items():
+            item = Gio.MenuItem.new(config['label'], "win.%s" % action)
+            self.menu_ext.append_menu_item(item)
+            self.app.set_accels_for_action("win.%s" % action, config['key'])
+
+    def do_deactivate(self):
+        for action in ACTIONS.keys():
+            self.app.set_accels_for_action("win.%s" % action, [])
+
+        del self.menu_ext
+
 
 class DuplicateLineWindowActivatable(GObject.Object, Gedit.WindowActivatable):
     __gtype_name__ = "DuplicateLineWindowActivatable"
@@ -22,41 +41,19 @@ class DuplicateLineWindowActivatable(GObject.Object, Gedit.WindowActivatable):
         GObject.Object.__init__(self)
 
     def do_activate(self):
-        self._insert_menu()
-
-    def do_deactivate(self):
-        self._remove_menu()
-
-        self._action_group = None
-
-    def _insert_menu(self):
-        manager = self.window.get_ui_manager()
-
-        # Add our menu action and set ctrl+shift+D to activate.
-        self._action_group = Gtk.ActionGroup("DuplicateLinePluginActions")
-        self._action_group.add_actions([(
-            "DuplicateLine",
-            None,
-            _("Duplicate Line"),
-            "<control><shift>d",
-            _("Duplicate current line, current selection or selected lines"),
-            self.on_duplicate_line_activate
-        )])
-
-        manager.insert_action_group(self._action_group, -1)
-
-        self._ui_id = manager.add_ui_from_string(ui_str)
-
-    def _remove_menu(self):
-        manager = self.window.get_ui_manager()
-        manager.remove_ui(self._ui_id)
-        manager.remove_action_group(self._action_group)
-        manager.ensure_update()
+        try:
+            for action, config in ACTIONS.items():
+                action = Gio.SimpleAction(name=action)
+                action.connect('activate', lambda e, f: getattr(self, config['method'])())
+                self.window.add_action(action)
+        except Exception:
+            print("Error initializing \"Duplicate Line\" plugin")
 
     def do_update_state(self):
-        self._action_group.set_sensitive(self.window.get_active_document() != None)
+        for action, config in ACTIONS.items():
+            self.window.lookup_action(action).set_enabled(self.window.get_active_document() is not None)
 
-    def on_duplicate_line_activate(self, action):
+    def on_duplicate_line(self):
         doc = self.window.get_active_document()
         if not doc:
             return
@@ -95,4 +92,3 @@ class DuplicateLineWindowActivatable(GObject.Object, Gedit.WindowActivatable):
             text = "\n" + doc.get_text(s, e, False)
 
             doc.insert(e, text)
-
